@@ -23,7 +23,9 @@ class GalleryDrag {
       const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
       if(!gesture.axis){
         if(Math.max(Math.abs(dx),Math.abs(dy))<7)return;
-        gesture.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+        if(Math.abs(dx)>Math.abs(dy)*1.15)gesture.axis='x';
+        else if(Math.abs(dy)>Math.abs(dx)*1.15)gesture.axis='y';
+        else return;
         if(gesture.axis==='x'){
           suppressClick=true;
           surface.setPointerCapture(e.pointerId);
@@ -35,7 +37,10 @@ class GalleryDrag {
       move(e.clientX-gesture.lastX);
       gesture.lastX=e.clientX;
     },{passive:false});
-    for(const type of ['pointerup','pointercancel','lostpointercapture'])surface.addEventListener(type,finish);
+    for(const type of ['pointerup','pointercancel'])surface.addEventListener(type,finish);
+    // Touch starts with implicit capture on the photo. Releasing that capture
+    // bubbles here when we transfer it to the surface; the drag is still active.
+    surface.addEventListener('lostpointercapture',e=>{if(e.target===surface)finish(e)});
     surface.addEventListener('pointerleave',e=>{if(gesture&&!surface.hasPointerCapture(gesture.id))finish(e)});
     surface.addEventListener('click',e=>{
       if(suppressClick&&e.detail!==0){e.preventDefault();e.stopImmediatePropagation();}

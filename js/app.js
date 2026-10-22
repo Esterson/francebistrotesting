@@ -117,8 +117,8 @@ $('#zoom-toggle').addEventListener('click',zoom);$('#lightbox-image').addEventLi
 lightbox.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();stepLightbox(1)}if(e.key==='ArrowLeft'){e.preventDefault();stepLightbox(-1)}});
 swipe($('.lightbox-scroll'),n=>{if(!$('.lightbox-scroll').classList.contains('zoomed'))stepLightbox(n)});
 
-let galleryPaused=false,galleryHover=false,galleryOffset=0,gallerySpeed=0,galleryDragging=false,galleryResumeAt=0;
-function renderGallery(){const track=$('#gallery-track');track.replaceChildren(...[...gallery,...gallery,...gallery].map((item,i)=>{const b=document.createElement('button');b.className='gallery-item';b.setAttribute('aria-label',item[lang]);if(i>=gallery.length){b.tabIndex=-1;b.setAttribute('aria-hidden','true')}const img=document.createElement('img');img.src=item.src;img.alt=item[lang];img.loading='lazy';b.append(img);b.addEventListener('click',()=>openLightbox('gallery',i%gallery.length));b.addEventListener('focus',()=>galleryHover=true);b.addEventListener('blur',()=>galleryHover=false);return b}));galleryOffset=0}
+let galleryPaused=false,galleryHover=false,galleryKeyboardFocus=false,galleryOffset=0,gallerySpeed=0,galleryDragging=false,galleryResumeAt=0;
+function renderGallery(){const track=$('#gallery-track');track.replaceChildren(...[...gallery,...gallery,...gallery].map((item,i)=>{const b=document.createElement('button');b.className='gallery-item';b.setAttribute('aria-label',item[lang]);if(i>=gallery.length){b.tabIndex=-1;b.setAttribute('aria-hidden','true')}const img=document.createElement('img');img.src=item.src;img.alt=item[lang];img.loading='lazy';b.append(img);b.addEventListener('click',()=>openLightbox('gallery',i%gallery.length));b.addEventListener('focus',()=>galleryKeyboardFocus=b.matches(':focus-visible'));b.addEventListener('blur',()=>galleryKeyboardFocus=false);return b}));galleryOffset=0}
 $('#gallery-track').addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')galleryHover=true});$('#gallery-track').addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')galleryHover=false});
 function paintGallery(){
   const track=$('#gallery-track'),items=track.children;
@@ -167,7 +167,7 @@ function updateScroll(){
   syncFooterAccess();
 }
 function frame(time){lenis?.raf(time);const dt=Math.min(time-lastTime,45)/1000||0;lastTime=time;if(scrollDirty&&!reduced.matches){updateScroll();scrollDirty=false}else if(reduced.matches)$('#header').classList.toggle('solid',scrollY>innerHeight-85);
-  const visible=$('.gallery-window').getBoundingClientRect();if(visible.bottom>0&&visible.top<innerHeight){const target=galleryPaused||galleryHover||galleryDragging||time<galleryResumeAt||lightbox.open||nav.classList.contains('open')||reduced.matches?0:(innerWidth<640?36:28);gallerySpeed+=(target-gallerySpeed)*.06;if(!galleryDragging)galleryOffset+=gallerySpeed*dt;paintGallery()}
+  const visible=$('.gallery-window').getBoundingClientRect();if(visible.bottom>0&&visible.top<innerHeight){const target=galleryPaused||galleryHover||galleryKeyboardFocus||galleryDragging||time<galleryResumeAt||lightbox.open||nav.classList.contains('open')||reduced.matches?0:(innerWidth<640?36:28);gallerySpeed+=(target-gallerySpeed)*.06;if(!galleryDragging)galleryOffset+=gallerySpeed*dt;paintGallery()}
   requestAnimationFrame(frame)
 }
 addEventListener('scroll',()=>scrollDirty=true,{passive:true});addEventListener('resize',()=>scrollDirty=true);reduced.addEventListener('change',()=>{scrollDirty=true;setupSmoothScroll();syncScrollLock();document.documentElement.classList.toggle('js-motion',!reduced.matches);if(reduced.matches){hero.removeAttribute('style');atmosphere.removeAttribute('style');heroContent.inert=false;heroContent.removeAttribute('aria-hidden');intro.removeAttribute('aria-hidden')}});

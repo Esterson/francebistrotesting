@@ -54,7 +54,7 @@ h2,h3 { text-wrap: balance; }
 .gallery-caption { justify-content: flex-end; }
 .gallery-caption .text-button { font-size: 16px; }
 .gallery-window { touch-action: pan-y pinch-zoom; cursor: grab; user-select: none; -webkit-user-select: none; }
-.gallery-item { cursor: grab; }
+.gallery-item { cursor: grab; touch-action: pan-y pinch-zoom; }
 .gallery-item img { -webkit-user-drag: none; }
 .gallery-window.is-dragging,.gallery-window.is-dragging .gallery-item { cursor: grabbing; }
 .gallery-window.is-dragging .gallery-item { transform: none; transition: none; }

@@ -1,0 +1,22 @@
+# Local dependencies and server output
+node_modules/
+*.log
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+.codex/
+.agents/
+
+# Generated presentation archives and original source materials
+/CHEVALET-presentation.zip
+/*.pdf
+/AristaPro-ExtraLight.ttf
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini

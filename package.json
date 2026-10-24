@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "description": "CHEVALET — modular HTML/CSS/JavaScript presentation for a future Tilda implementation",
-  "scripts": {"dev": "node scripts/serve.mjs", "start": "node scripts/serve.mjs", "assets": "node scripts/menu-assets.mjs", "check": "node scripts/check.mjs"},
+  "scripts": {"dev": "node scripts/serve.mjs", "start": "node scripts/serve.mjs", "assets": "node scripts/menu-assets.mjs", "check": "node scripts/check.mjs", "release": "node scripts/version-assets.mjs && node scripts/check.mjs"},
   "engines": {"node": ">=20.11"}
 }

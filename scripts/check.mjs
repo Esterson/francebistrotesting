@@ -9,7 +9,7 @@ const failures=[];
 for(const file of ['index.html','css/styles.css','css/refinements.css','css/brand.css','assets/fonts.css','js/app.js','js/content.js']){
  const source=await readFile(resolve(root,file),'utf8');
  const refs=file.endsWith('.html')?[...source.matchAll(/(?:src|href)="([^"#]+)"/g)].map(m=>m[1]):file.endsWith('.css')?[...source.matchAll(/url\(['"]?([^)'"\s]+)['"]?\)/g)].map(m=>m[1]):[];
- for(const ref of refs){if(/^(https?:|tel:|mailto:|\?|data:)/.test(ref))continue;const path=resolve(root,dirname(file),ref);try{if(!(await stat(path)).size)failures.push(`Empty asset: ${ref}`)}catch{failures.push(`Missing asset: ${ref}`)}}
+ for(const ref of refs){if(/^(https?:|tel:|mailto:|\?|data:)/.test(ref))continue;const path=resolve(root,dirname(file),ref.split(/[?#]/)[0]);try{if(!(await stat(path)).size)failures.push(`Empty asset: ${ref}`)}catch{failures.push(`Missing asset: ${ref}`)}}
  if(file==='index.html')for(const[,key]of source.matchAll(/data-i18n="([^"]+)"/g))for(const lang of ['ru','en'])if(!copy[lang][key])failures.push(`Missing ${lang} translation: ${key}`);
 }
 for(const item of gallery)try{await stat(resolve(root,item.src))}catch{failures.push(`Missing gallery photo: ${item.src}`)}

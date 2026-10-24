@@ -2,7 +2,7 @@
 (() => {
 'use strict';
 class GalleryDrag {
-  constructor(surface,{start,move,end}) {
+  constructor(surface,{start,move,end,nativeTouch=false}) {
     let gesture=null,suppressClick=false;
     const finish=e=>{
       if(!gesture||(e&&e.pointerId!==undefined&&e.pointerId!==gesture.id))return;
@@ -14,6 +14,7 @@ class GalleryDrag {
     surface.addEventListener('pointerdown',e=>{
       if(gesture||e.isPrimary===false||e.button!==0)return;
       suppressClick=false;
+      if(nativeTouch&&e.pointerType==='touch')return;
       gesture={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,axis:null};
       start();
     });
@@ -49,5 +50,29 @@ class GalleryDrag {
     window.addEventListener('blur',()=>finish());
   }
 }
+// Touch scrolling belongs to the browser: no capture, transforms or preventDefault.
+// Only a real horizontal swipe pauses autoplay and suppresses the following click.
+class GalleryTouch {
+  constructor(surface,{start,end}) {
+    let touch=null,suppressClick=false;
+    const finish=()=>{if(touch?.dragging)end();touch=null};
+    surface.addEventListener('touchstart',e=>{
+      if(e.touches.length!==1){finish();return}
+      suppressClick=false;
+      const p=e.touches[0];touch={x:p.clientX,y:p.clientY,dragging:false};
+    },{passive:true});
+    surface.addEventListener('touchmove',e=>{
+      if(!touch||e.touches.length!==1)return;
+      const p=e.touches[0],dx=Math.abs(p.clientX-touch.x),dy=Math.abs(p.clientY-touch.y);
+      if(!touch.dragging&&dx>7&&dx>dy){touch.dragging=true;suppressClick=true;start()}
+    },{passive:true});
+    for(const type of ['touchend','touchcancel'])surface.addEventListener(type,finish,{passive:true});
+    surface.addEventListener('click',e=>{
+      if(suppressClick&&e.detail!==0){e.preventDefault();e.stopImmediatePropagation()}
+    },true);
+    window.addEventListener('blur',finish);
+  }
+}
 window.ChevaletGalleryDrag=GalleryDrag;
+window.ChevaletGalleryTouch=GalleryTouch;
 })();

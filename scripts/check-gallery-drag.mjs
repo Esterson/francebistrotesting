@@ -49,3 +49,35 @@ emit('lostpointercapture');
 assert.equal(classes.size,0);
 assert.equal(ended,4);
 console.log('PASS: implicit touch capture transfer, continued drag, tap, click suppression, vertical scrolling, mouse drag and cancellation.');
+
+const nativeEvents={},nativeSurface={...surface,addEventListener(name,handler){nativeEvents[name]=handler}};
+let nativeStarts=0,nativeEnds=0;
+new window.ChevaletGalleryDrag(nativeSurface,{
+  nativeTouch:true,start(){throw Error('Custom drag must ignore native touch')},
+  move(){throw Error('Custom drag must not move native touch')},end(){}
+});
+nativeEvents.pointerdown({pointerId:1,isPrimary:true,button:0,pointerType:'touch'});
+nativeEvents.pointermove({pointerId:1,pointerType:'touch',clientX:180,clientY:100});
+new window.ChevaletGalleryTouch(nativeSurface,{start:()=>nativeStarts++,end:()=>nativeEnds++});
+const touchAt=(x,y)=>({touches:[{clientX:x,clientY:y}]});
+nativeEvents.touchstart(touchAt(100,100));
+assert.equal(nativeStarts,0,'Touching alone must not pause autoplay');
+nativeEvents.touchmove(touchAt(102,130));
+assert.equal(nativeStarts,0,'Vertical scrolling must not pause the gallery');
+nativeEvents.touchend({touches:[]});
+nativeEvents.touchstart(touchAt(100,100));
+nativeEvents.touchmove(touchAt(140,102));
+nativeEvents.touchmove(touchAt(180,104));
+assert.equal(nativeStarts,1,'A native swipe pauses autoplay only once');
+nativeEvents.touchend({touches:[]});
+assert.equal(nativeEnds,1);
+let blocked=false;
+nativeEvents.click({detail:1,preventDefault(){blocked=true},stopImmediatePropagation(){}});
+assert(blocked,'A swipe must not open a photo');
+nativeEvents.touchstart(touchAt(100,100));
+nativeEvents.touchend({touches:[]});blocked=false;
+nativeEvents.click({detail:1,preventDefault(){blocked=true},stopImmediatePropagation(){}});
+assert(!blocked,'A simple tap must open a photo');
+nativeEvents.touchstart(touchAt(100,100));nativeEvents.touchmove(touchAt(140,100));
+nativeEvents.touchcancel({touches:[]});assert.equal(nativeEnds,2);
+console.log('PASS: native touch bypasses custom dragging; no pause on contact or vertical scroll; swipe, cancellation and tap remain distinct.');

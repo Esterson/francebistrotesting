@@ -1,0 +1,72 @@
+/* Original outlined artwork extracted from the supplied brand PDF.
+   Inline SVG symbols also work when index.html is opened through file://. */
+.brand-definitions { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+.brand-wordmark,.brand-symbol {
+  display: block;
+  height: auto;
+  fill: currentColor;
+}
+.brand-wordmark {
+  width: 100%;
+  aspect-ratio: 379.6647 / 43.9269;
+}
+.brand-symbol {
+  width: 46px;
+  aspect-ratio: 206.187 / 186.712;
+  flex-shrink: 0;
+}
+.header .brand-header {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  display: block;
+  padding: 5px;
+  font-size: 0;
+  line-height: 1;
+}
+.header:not(.solid) .brand-header { color: #f9f4ed; }
+.header.solid .brand-header { color: var(--wine); }
+.brand-header { transition: color .35s; }
+.hero-title-row .hero-logo {
+  width: clamp(300px,43vw,660px);
+  min-width: 0;
+  font-size: 0;
+  line-height: 1;
+  margin: 0;
+  flex-shrink: 1;
+}
+.nav-heading .brand-navigation {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: clamp(200px,23vw,270px);
+  font-size: 0;
+  line-height: 1;
+}
+.brand-navigation .brand-symbol { width: 48px; }
+.brand-navigation .brand-wordmark { flex: 1; }
+.footer-wordmark {
+  width: 100%;
+  font-size: 0;
+  line-height: 1;
+  letter-spacing: 0;
+  margin: 24px 0 44px;
+}
+@media(max-width:1199px) and (min-width:960px) {
+  .hero-title-row .hero-logo { width: 37vw; }
+}
+@media(max-width:959px) {
+  .hero-title-row .hero-logo { width: min(76vw,660px); }
+}
+@media(max-width:639px) {
+  .header .brand-header { width: 38px; padding: 5px; }
+  .brand-header .brand-symbol { width: 28px; }
+  .header-contact { font-size: clamp(12px,calc(6vw - 8px),18px); }
+  .nav-toggle { gap: 8px; font-size: 16px; }
+  .hamburger { width: 18px; }
+  .hero-title-row .hero-logo { width: min(86vw,440px); }
+  .nav-heading .brand-navigation { width: 220px; gap: 12px; }
+  .brand-navigation .brand-symbol { width: 42px; }
+  .footer-wordmark { margin: 14px 0 30px; }
+}
